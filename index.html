@@ -26,19 +26,25 @@
     .card{position:relative;color:#151515;background:#fffdf5;border:1px solid #0002;border-radius:8px;box-shadow:0 6px 18px #0005}.tablecard{display:flex;width:59px;height:89px;flex-direction:column;align-items:center;justify-content:center}.tablecard b{font-size:20px}.tablecard span{font-size:23px}
     .message{display:inline-block;margin-top:7px;padding:7px 14px;color:#f5d77f;background:#001e1499;border-radius:999px;font-size:11px}.last{margin-top:7px;color:#ffffff70;font-size:10px}
     .handarea{position:absolute;right:0;bottom:0;left:0;padding:0 12px 22px}.caption{display:flex;max-width:820px;margin:0 auto 10px;justify-content:space-between;color:#ffffff8c;font-size:10px}.caption b{color:#f5c75c}
-    .hand{display:flex;max-width:820px;margin:auto;overflow-x:auto;padding:9px 17px 17px 2px;scrollbar-width:none}.handcard{flex:0 0 64px;height:104px;margin-right:-20px;padding:7px;text-align:left}.handcard b,.handcard span{display:block;line-height:1}.handcard b{font-size:19px}.handcard span{margin-top:3px;font-size:19px}.handcard em{position:absolute;right:4px;bottom:4px;padding:2px 3px;color:#5e4515;background:#f2d27a;border-radius:4px;font-size:7px;font-style:normal}.handcard:disabled{opacity:.35}.handcard.can{transform:translateY(-7px)}
+    .hand{display:flex;max-width:820px;margin:auto;overflow-x:auto;padding:9px 17px 17px 2px;scrollbar-width:none}.handcard{flex:0 0 64px;height:104px;margin-right:-20px;padding:7px;text-align:left}.handcard b,.handcard span{display:block;line-height:1}.handcard b{font-size:19px}.handcard span{margin-top:3px;font-size:19px}.handcard em{position:absolute;right:4px;bottom:4px;padding:2px 3px;color:#5e4515;background:#f2d27a;border-radius:4px;font-size:7px;font-style:normal}.handcard:disabled{opacity:.35}.handcard.can{transform:translateY(-7px)}.trumpdot{position:absolute!important;top:5px;right:5px;width:9px;height:9px;background:#e5222e;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 3px #0007}
     .finish{position:absolute;top:50%;left:50%;width:min(330px,82%);padding:25px;background:#092c20ef;border:1px solid #ffffff1f;border-radius:20px;text-align:center;transform:translate(-50%,-50%)}.finish h2{margin:0;color:#f5c75c;font-size:30px}.finish p{color:#ffffff9c}
-    [hidden]{display:none!important}@media(min-width:650px){.app{padding:24px 35px}.setup{padding:40px}.table{min-height:730px}.handcard{flex-basis:72px;height:112px}.tablecard{width:72px;height:105px}.playwrap small{width:72px}}
+    [hidden]{display:none!important}@media(min-width:650px){.app{padding:24px 35px}.setup{padding:40px}.table{min-height:730px}.handcard{flex-basis:72px;height:112px}.tablecard{width:72px;height:105px}.playwrap small{width:72px}}@media(orientation:landscape){.app{padding:8px 18px}.brand-kicker{display:none}h1{font-size:30px}.table{min-height:calc(100vh - 65px);margin-top:5px}.scores{top:7px}.top{top:53px}.left,.right{top:155px}.center{top:75px;height:205px}.played{height:125px}.handarea{padding-bottom:8px}.caption{margin-bottom:3px}.hand{max-width:none;overflow:visible;padding:5px 10px 10px;justify-content:center}.handcard{flex:1 1 0;min-width:28px;max-width:58px;height:86px;margin-right:-6px;padding:5px}.handcard b,.handcard span{font-size:15px}.tablecard{width:54px;height:78px}.game-message{margin-top:2px}}
   </style>
 </head>
 <body>
 <main class="app">
   <header><div><div class="kicker">自由组队 · 网页试玩版</div><h1>5 · 10 · K</h1></div><div class="chip" id="chip">级牌 2 · 主牌 ♥</div></header>
   <section class="setup" id="setup">
-    <p class="step">01 / 自由组队</p><h2>你想和谁一队？</h2><p class="hint">这里先由电脑代打“好友”位置。联机版中，好友会在自己的手机上出牌。</p>
-    <div class="choices" id="choices"></div>
-    <div class="trump"><p class="step">02 / 选择主花色</p><div class="suits" id="suits"></div></div>
-    <button class="start" id="start">洗牌并开始</button><p class="note">两副牌 · 四人各 27 张 · 5/10/K 计分 · 有同类牌必须跟牌</p>
+    <div id="network">
+      <p class="step">01 / 好友联机</p><h2 id="lobbyTitle">邀请好友一起玩</h2><p class="hint" id="netStatus">创建房间后，把邀请链接发给微信好友。</p>
+      <button class="start" id="createRoom">创建好友房间</button>
+      <div id="inviteBox" hidden style="margin-top:16px;padding:14px;background:#001b1166;border-radius:14px;text-align:center"><b id="roomCode" style="display:block;color:#f5c75c;font-size:25px;letter-spacing:4px"></b><button class="start" id="copyInvite" style="margin-top:10px">复制邀请链接</button></div>
+    </div>
+    <div id="config" hidden>
+      <p class="step">02 / 自由组队</p><h2>选择房主的队友</h2><p class="hint">两位真人可以同队，也可以各自搭配一个机器人。</p><div class="choices" id="choices"></div>
+      <div class="trump"><p class="step">03 / 选择主花色</p><div class="suits" id="suits"></div></div>
+      <button class="start" id="start">洗牌并开始</button><p class="note">红点表示主牌 · 建议把手机横过来查看全部手牌</p>
+    </div>
   </section>
   <section class="table" id="table" hidden>
     <div class="scores"><div class="team"><span id="teamA">A 队</span><b id="scoreA">0</b></div><div class="colon">:</div><div class="team two"><b id="scoreB">0</b><span>B 队</span></div></div>
@@ -50,9 +56,10 @@
     <div class="finish" id="finish" hidden><h2 id="result">你们赢了！</h2><p id="finalscore"></p><button class="start" id="again">重新组队</button></div>
   </section>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js"></script>
 <script>
-const SUITS=[['spade','♠','黑桃',0],['heart','♥','红桃',1],['club','♣','梅花',0],['diamond','♦','方片',1]],RANKS=['2','3','4','5','6','7','8','9','10','J','Q','K','A'],NAMES=['你','好友（试玩代打）','机器人小五','机器人老K'];
-let mate=1,trump='heart',hands=[[],[],[],[]],table=[],turn=0,scores=[0,0],playing=false,clearing=false;
+const SUITS=[['spade','♠','黑桃',0],['heart','♥','红桃',1],['club','♣','梅花',0],['diamond','♦','方片',1]],RANKS=['2','3','4','5','6','7','8','9','10','J','Q','K','A'],NAMES=['房主','好友','机器人小五','机器人老K'];
+let mate=1,trump='heart',hands=[[],[],[],[]],counts=[0,0,0,0],table=[],turn=0,scores=[0,0],playing=false,clearing=false,lastText='',role='none',peer=null,conn=null,online=false,gameEnded=false;
 const $=id=>document.getElementById(id),team=p=>(p===0||p===mate?0:1),pts=c=>c.r==='5'?5:(c.r==='10'||c.r==='K'?10:0);
 function tr(c){return c.s==='joker'||c.s===trump||c.r==='2'} function es(c){return tr(c)?'trump':c.s}
 function power(c){if(c.r==='BJ')return 1000;if(c.r==='SJ')return 990;if(c.r==='2')return c.s===trump?980:970+SUITS.findIndex(x=>x[0]===c.s);if(c.s===trump)return 500+RANKS.indexOf(c.r);return RANKS.indexOf(c.r)}
@@ -66,19 +73,47 @@ function setupUI(){
   $('suits').innerHTML=SUITS.map(s=>`<button class="suit ${s[3]?'red':''} ${trump===s[0]?'on':''}" data-s="${s[0]}">${s[1]}<small>${s[2]}</small></button>`).join('');
   document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{trump=b.dataset.s;$('chip').textContent='级牌 2 · 主牌 '+SUITS.find(s=>s[0]===trump)[1];setupUI()});
 }
-function start(){let d=deck();hands=[0,1,2,3].map(i=>d.slice(i*27,(i+1)*27));table=[];turn=0;scores=[0,0];playing=true;clearing=false;$('setup').hidden=true;$('table').hidden=false;$('finish').hidden=true;$('handarea').hidden=false;$('teamA').textContent='A 队 · 你和'+NAMES[mate];$('message').textContent='轮到你先出牌';$('last').textContent='';render()}
-function render(){
-  $('scoreA').textContent=scores[0];$('scoreB').textContent=scores[1];for(let i=1;i<4;i++)$('n'+i).textContent=hands[i].length+' 张';$('handcount').textContent='你的手牌 · '+hands[0].length+' 张';$('turnhint').textContent=turn===0&&!clearing?'请选择一张发亮的牌':'等待其他玩家';
-  $('played').innerHTML=table.map(x=>{let f=face(x.c);return`<div class="playwrap"><small>${NAMES[x.p].replace('（试玩代打）','')}</small><div class="card tablecard ${f[2]?'red':''}"><b>${f[0]}</b><span>${f[1]}</span></div></div>`}).join('');
-  let ids=new Set(turn===0&&!clearing?legal(hands[0]).map(c=>c.id):[]);
-  $('hand').innerHTML=hands[0].slice().sort((a,b)=>es(a).localeCompare(es(b))||power(b)-power(a)).map(c=>{let f=face(c),ok=ids.has(c.id);return`<button class="card handcard ${f[2]?'red':''} ${ok?'can':''}" data-c="${c.id}" ${ok?'':'disabled'}><b>${f[0]}</b><span>${f[1]}</span>${pts(c)?`<em>${pts(c)}分</em>`:''}</button>`}).join('');
-  document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>play(0,hands[0].find(c=>c.id===b.dataset.c)));
+function start(){
+  if(role!=='host'||!online){$('netStatus').textContent='请等待好友加入后再开始';return}
+  let d=deck();hands=[0,1,2,3].map(i=>d.slice(i*27,(i+1)*27));counts=hands.map(h=>h.length);table=[];turn=0;scores=[0,0];playing=true;clearing=false;gameEnded=false;lastText='';
+  $('setup').hidden=true;$('table').hidden=false;$('finish').hidden=true;$('handarea').hidden=false;$('message').textContent='轮到房主先出牌';render();sync()
 }
-function play(p,c){if(!c||clearing)return;hands[p]=hands[p].filter(x=>x.id!==c.id);table.push({p,c});turn=(p+1)%4;$('message').textContent=p===0?'其他玩家正在出牌…':NAMES[p]+' 已出牌';render();if(table.length===4)clearTrick();else if(turn!==0)setTimeout(ai,480)}
-function ai(){if(!playing||turn===0||clearing)return;let a=legal(hands[turn]).slice().sort((x,y)=>power(x)-power(y));play(turn,a[0])}
-function clearTrick(){clearing=true;setTimeout(()=>{let w=winner(),p=table.reduce((n,x)=>n+pts(x.c),0);scores[team(w)]+=p;$('last').textContent=NAMES[w]+' 收下这一墩，获得 '+p+' 分';table=[];turn=w;clearing=false;if(hands.every(h=>h.length===0)){playing=false;render();finish()}else{$('message').textContent=w===0?'你赢得上一墩，请出牌':NAMES[w]+' 赢得上一墩';render();if(turn!==0)setTimeout(ai,480)}},800)}
-function finish(){let win=scores[0]>=scores[1];$('handarea').hidden=true;$('finish').hidden=false;$('result').textContent=win?'你们赢了！':'再来一局？';$('finalscore').textContent='A 队 '+scores[0]+' 分 · B 队 '+scores[1]+' 分'}
-$('start').onclick=start;$('again').onclick=()=>{$('table').hidden=true;$('setup').hidden=false;setupUI()};setupUI();
+function cardHTML(c,kind,ok,id){let f=face(c);return`<${kind==='hand'?'button':'div'} class="card ${kind==='hand'?'handcard':'tablecard'} ${f[2]?'red':''} ${ok?'can':''}" ${id?`data-c="${id}"`:''} ${kind==='hand'&&!ok?'disabled':''}><b>${f[0]}</b><span>${f[1]}</span>${tr(c)?'<i class="trumpdot"></i>':''}${pts(c)?`<em>${pts(c)}分</em>`:''}</${kind==='hand'?'button':'div'}>`}
+function render(){
+  const me=role==='guest'?1:0,myHand=hands[me]||[];
+  $('teamA').textContent='A 队 · '+NAMES[0]+'和'+NAMES[mate];$('scoreA').textContent=scores[0];$('scoreB').textContent=scores[1];
+  for(let i=1;i<4;i++)$('n'+i).textContent=(counts[i]??0)+' 张';
+  $('handcount').textContent='你的手牌 · '+myHand.length+' 张';$('turnhint').textContent=turn===me&&!clearing?'请选择一张发亮的牌':'等待其他玩家';
+  $('played').innerHTML=table.map(x=>`<div class="playwrap"><small>${NAMES[x.p]}</small>${cardHTML(x.c,'table',false,'')}</div>`).join('');$('last').textContent=lastText;
+  let ids=new Set(turn===me&&!clearing?legal(myHand).map(c=>c.id):[]);
+  $('hand').innerHTML=myHand.slice().sort((a,b)=>es(a).localeCompare(es(b))||power(b)-power(a)).map(c=>cardHTML(c,'hand',ids.has(c.id),c.id)).join('');
+  document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>requestPlay(b.dataset.c));
+}
+function requestPlay(id){const me=role==='guest'?1:0;if(role==='guest'){if(turn===1&&conn?.open)conn.send({t:'play',id});return}let c=hands[me].find(x=>x.id===id);if(c&&legal(hands[me]).some(x=>x.id===id))play(me,c)}
+function play(p,c){if(!c||clearing||turn!==p||!legal(hands[p]).some(x=>x.id===c.id))return;hands[p]=hands[p].filter(x=>x.id!==c.id);counts[p]=hands[p].length;table.push({p,c});turn=(p+1)%4;$('message').textContent=NAMES[p]+' 已出牌';render();sync();if(table.length===4)clearTrick();else if(shouldAI())setTimeout(ai,480)}
+function shouldAI(){return playing&&!clearing&&(turn===2||turn===3)}
+function ai(){if(!shouldAI())return;let a=legal(hands[turn]).slice().sort((x,y)=>power(x)-power(y));play(turn,a[0])}
+function clearTrick(){clearing=true;sync();setTimeout(()=>{let w=winner(),p=table.reduce((n,x)=>n+pts(x.c),0);scores[team(w)]+=p;lastText=NAMES[w]+' 收下这一墩，获得 '+p+' 分';table=[];turn=w;clearing=false;if(hands.every(h=>h.length===0)){playing=false;gameEnded=true;render();finish();sync()}else{$('message').textContent=NAMES[w]+' 赢得上一墩';render();sync();if(shouldAI())setTimeout(ai,480)}},800)}
+function finish(){const me=role==='guest'?1:0,winTeam=scores[0]>=scores[1]?0:1;$('handarea').hidden=true;$('finish').hidden=false;$('result').textContent=team(me)===winTeam?'你们赢了！':'再来一局？';$('finalscore').textContent='A 队 '+scores[0]+' 分 · B 队 '+scores[1]+' 分'}
+function snapshot(){return{t:'state',playing,gameEnded,trump,mate,hand:hands[1],counts:hands.map(h=>h.length),table,turn,scores,clearing,lastText,message:$('message').textContent}}
+function sync(){if(role==='host'&&conn?.open)conn.send(snapshot())}
+function receiveState(s){trump=s.trump;mate=s.mate;hands=[[],s.hand,[],[]];counts=s.counts;table=s.table;turn=s.turn;scores=s.scores;clearing=s.clearing;lastText=s.lastText;playing=s.playing;gameEnded=s.gameEnded;$('chip').textContent='级牌 2 · 主牌 '+SUITS.find(x=>x[0]===trump)[1];$('setup').hidden=true;$('table').hidden=false;$('message').textContent=s.message;$('finish').hidden=true;$('handarea').hidden=false;render();if(gameEnded)finish()}
+function bindConnection(c){
+  conn=c;conn.on('open',()=>{online=true;if(role==='host'){$('netStatus').textContent='好友已加入，可以选择队伍并开始';$('config').hidden=false;sync()}else $('netStatus').textContent='已加入，等待房主开始'});
+  conn.on('data',d=>{if(role==='guest'&&d.t==='state')receiveState(d);if(role==='host'&&d.t==='play'&&turn===1){let c=hands[1].find(x=>x.id===d.id);if(c&&legal(hands[1]).some(x=>x.id===d.id))play(1,c)}});
+  conn.on('close',()=>{online=false;if(playing)$('message').textContent='好友连接已断开'})
+}
+function createRoom(){
+  if(!window.Peer){$('netStatus').textContent='联机组件加载失败，请刷新重试';return}role='host';let code=Math.random().toString(36).slice(2,8).toUpperCase(),id='double510k-'+code.toLowerCase(),link=location.origin+location.pathname+'?room='+code;
+  $('createRoom').disabled=true;$('inviteBox').hidden=false;$('roomCode').textContent='房间 '+code;$('netStatus').textContent='等待好友打开邀请链接…';
+  $('copyInvite').onclick=async()=>{try{await navigator.clipboard.writeText(link);$('copyInvite').textContent='已复制，发给好友吧'}catch(e){prompt('复制这个邀请链接',link)}};
+  peer=new Peer(id);peer.on('connection',bindConnection);peer.on('error',e=>{$('netStatus').textContent=e.type==='unavailable-id'?'房间码冲突，请刷新重试':'联机失败，请刷新重试'})
+}
+function joinRoom(code){
+  if(!window.Peer){$('netStatus').textContent='联机组件加载失败，请刷新重试';return}role='guest';$('lobbyTitle').textContent='正在加入好友房间';$('createRoom').hidden=true;$('netStatus').textContent='正在连接房主，请保持页面打开…';
+  peer=new Peer();peer.on('open',()=>bindConnection(peer.connect('double510k-'+code.toLowerCase(),{reliable:true})));peer.on('error',()=>{$('netStatus').textContent='未找到房间，请让房主保持页面打开'})
+}
+$('createRoom').onclick=createRoom;$('start').onclick=start;$('again').onclick=()=>location.href=location.origin+location.pathname;setupUI();let room=new URLSearchParams(location.search).get('room');if(room)joinRoom(room);
 </script>
 </body>
 </html>
