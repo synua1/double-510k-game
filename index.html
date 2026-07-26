@@ -26,7 +26,7 @@
     .card{position:relative;color:#151515;background:#fffdf5;border:1px solid #0002;border-radius:8px;box-shadow:0 6px 18px #0005}.tablecard{display:flex;width:59px;height:89px;flex-direction:column;align-items:center;justify-content:center}.tablecard b{font-size:20px}.tablecard span{font-size:23px}
     .message{display:inline-block;margin-top:7px;padding:7px 14px;color:#f5d77f;background:#001e1499;border-radius:999px;font-size:11px}.last{margin-top:7px;color:#ffffff70;font-size:10px}
     .handarea{position:absolute;right:0;bottom:0;left:0;padding:0 12px 22px}.caption{display:flex;max-width:820px;margin:0 auto 10px;justify-content:space-between;color:#ffffff8c;font-size:10px}.caption b{color:#f5c75c}
-    .hand{display:flex;max-width:820px;margin:auto;overflow-x:auto;padding:9px 17px 17px 2px;scrollbar-width:none}.handcard{flex:0 0 64px;height:104px;margin-right:-20px;padding:7px;text-align:left}.handcard b,.handcard span{display:block;line-height:1}.handcard b{font-size:19px}.handcard span{margin-top:3px;font-size:19px}.handcard em{position:absolute;right:4px;bottom:4px;padding:2px 3px;color:#5e4515;background:#f2d27a;border-radius:4px;font-size:7px;font-style:normal}.handcard:disabled{opacity:.35}.handcard.can{transform:translateY(-7px)}.trumpdot{position:absolute!important;top:5px;right:5px;width:9px;height:9px;background:#e5222e;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 3px #0007}
+    .hand{display:flex;max-width:820px;margin:auto;overflow-x:auto;padding:9px 17px 17px 2px;scrollbar-width:none}.handcard{flex:0 0 64px;height:104px;margin-right:-20px;padding:7px;text-align:left;transition:.15s}.handcard b,.handcard span{display:block;line-height:1}.handcard b{font-size:19px}.handcard span{margin-top:3px;font-size:19px}.handcard em{position:absolute;right:4px;bottom:4px;padding:2px 3px;color:#5e4515;background:#f2d27a;border-radius:4px;font-size:7px;font-style:normal}.handcard:disabled{opacity:.35}.handcard.can{cursor:pointer}.handcard.picked{transform:translateY(-15px);box-shadow:0 0 0 3px #f5c75c,0 8px 20px #0007}.trumpdot{position:absolute!important;top:5px;right:5px;width:9px;height:9px;background:#e5222e;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 3px #0007}.playwrap{max-width:150px}.multicards{display:flex;justify-content:center}.multicards .tablecard{margin-right:-35px}.multicards .tablecard:last-child{margin-right:0}.playbtn{padding:5px 12px;color:#163c2d;background:#f5c75c;border:0;border-radius:999px;font-size:11px;font-weight:800}
     .finish{position:absolute;top:50%;left:50%;width:min(330px,82%);padding:25px;background:#092c20ef;border:1px solid #ffffff1f;border-radius:20px;text-align:center;transform:translate(-50%,-50%)}.finish h2{margin:0;color:#f5c75c;font-size:30px}.finish p{color:#ffffff9c}
     [hidden]{display:none!important}@media(min-width:650px){.app{padding:24px 35px}.setup{padding:40px}.table{min-height:730px}.handcard{flex-basis:72px;height:112px}.tablecard{width:72px;height:105px}.playwrap small{width:72px}}@media(orientation:landscape){.app{padding:8px 18px}.brand-kicker{display:none}h1{font-size:30px}.table{min-height:calc(100vh - 65px);margin-top:5px}.scores{top:7px}.top{top:53px}.left,.right{top:155px}.center{top:75px;height:205px}.played{height:125px}.handarea{padding-bottom:8px}.caption{margin-bottom:3px}.hand{max-width:none;overflow:visible;padding:5px 10px 10px;justify-content:center}.handcard{flex:1 1 0;min-width:28px;max-width:58px;height:86px;margin-right:-6px;padding:5px}.handcard b,.handcard span{font-size:15px}.tablecard{width:54px;height:78px}.game-message{margin-top:2px}}
   </style>
@@ -52,20 +52,61 @@
     <div class="seat left"><span class="avatar">五</span><b>机器人小五</b><small id="n2">27 张</small></div>
     <div class="seat right"><span class="avatar">K</span><b>机器人老K</b><small id="n3">27 张</small></div>
     <div class="center"><div class="played" id="played"></div><div class="message" id="message">轮到你先出牌</div><div class="last" id="last"></div></div>
-    <div class="handarea" id="handarea"><div class="caption"><span id="handcount">你的手牌 · 27 张</span><b id="turnhint">请选择一张发亮的牌</b></div><div class="hand" id="hand"></div></div>
+    <div class="handarea" id="handarea"><div class="caption"><span id="handcount">你的手牌 · 27 张</span><b id="turnhint">请选择手牌</b><button class="playbtn" id="confirmPlay">确认出牌</button></div><div class="hand" id="hand"></div></div>
     <div class="finish" id="finish" hidden><h2 id="result">你们赢了！</h2><p id="finalscore"></p><button class="start" id="again">重新组队</button></div>
   </section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js"></script>
 <script>
 const SUITS=[['spade','♠','黑桃',0],['heart','♥','红桃',1],['club','♣','梅花',0],['diamond','♦','方片',1]],RANKS=['2','3','4','5','6','7','8','9','10','J','Q','K','A'],NAMES=['房主','好友','机器人小五','机器人老K'];
-let mate=1,trump='heart',hands=[[],[],[],[]],counts=[0,0,0,0],table=[],turn=0,scores=[0,0],playing=false,clearing=false,lastText='',role='none',peer=null,conn=null,online=false,gameEnded=false;
+let mate=1,trump='heart',hands=[[],[],[],[]],counts=[0,0,0,0],table=[],turn=0,scores=[0,0],playing=false,clearing=false,lastText='',role='none',peer=null,conn=null,online=false,gameEnded=false,selected=new Set();
 const $=id=>document.getElementById(id),team=p=>(p===0||p===mate?0:1),pts=c=>c.r==='5'?5:(c.r==='10'||c.r==='K'?10:0);
 function tr(c){return c.s==='joker'||c.s===trump||c.r==='2'} function es(c){return tr(c)?'trump':c.s}
 function power(c){if(c.r==='BJ')return 1000;if(c.r==='SJ')return 990;if(c.r==='2')return c.s===trump?980:970+SUITS.findIndex(x=>x[0]===c.s);if(c.s===trump)return 500+RANKS.indexOf(c.r);return RANKS.indexOf(c.r)}
 function face(c){if(c.r==='BJ')return['大','王',1];if(c.r==='SJ')return['小','王',0];let s=SUITS.find(x=>x[0]===c.s);return[c.r,s[1],s[3]]}
-function legal(h){if(!table.length)return h;let lead=es(table[0].c),f=h.filter(c=>es(c)===lead);return f.length?f:h}
-function winner(){let w=table[0];for(let p of table.slice(1)){let a=es(w.c),b=es(p.c);if((a===b&&power(p.c)>power(w.c))||(b==='trump'&&a!=='trump'))w=p}return w.p}
+function faceKey(c){return c.s+'-'+c.r}
+function typeName(t){return({single:'单张',pair:'对子',tractor:'拖拉机',throw:'甩牌'})[t]||t}
+function pairCount(cards){let m={};cards.forEach(c=>m[faceKey(c)]=(m[faceKey(c)]||0)+1);return Object.values(m).filter(n=>n>=2).length}
+function combo(cards){
+  if(!cards.length)return{type:'invalid',count:0};
+  let suit=es(cards[0]);if(cards.some(c=>es(c)!==suit))return{type:'invalid',count:cards.length};
+  if(cards.length===1)return{type:'single',count:1,suit,top:power(cards[0]),pairs:0};
+  let groups={};cards.forEach(c=>(groups[faceKey(c)]||=[]).push(c));let gs=Object.values(groups),pairs=gs.filter(g=>g.length===2);
+  if(cards.length===2&&pairs.length===1)return{type:'pair',count:2,suit,top:power(cards[0]),pairs:1};
+  if(cards.length>=4&&cards.length%2===0&&pairs.length===cards.length/2){
+    let values=pairs.map(g=>power(g[0])).sort((a,b)=>a-b),consecutive=values.every((v,i)=>i===0||v===values[i-1]+1);
+    if(consecutive)return{type:'tractor',count:cards.length,suit,top:values.at(-1),pairs:pairs.length};
+  }
+  return{type:'throw',count:cards.length,suit,top:Math.max(...cards.map(power)),pairs:pairCount(cards)};
+}
+function followError(hand,cards){
+  let lead=table[0]?.cards;if(!lead)return combo(cards).type==='invalid'?'甩牌必须全部属于同一种花色或主牌':'';
+  if(cards.length!==lead.length)return'必须跟出 '+lead.length+' 张牌';
+  let leadSuit=combo(lead).suit,same=hand.filter(c=>es(c)===leadSuit),chosenSame=cards.filter(c=>es(c)===leadSuit),need=Math.min(lead.length,same.length);
+  if(chosenSame.length<need)return'有同类牌时必须先跟足同类牌';
+  let lc=combo(lead),availablePairs=pairCount(same),chosenPairs=pairCount(chosenSame);
+  if(lc.type==='pair'&&availablePairs>0&&chosenPairs<1)return'手中有对子，必须跟对子';
+  if(lc.type==='tractor'){let required=Math.min(lc.pairs,availablePairs);if(chosenPairs<required)return'必须尽量跟出对子或拖拉机结构'}
+  return'';
+}
+function beats(challenger,current,lead){
+  let a=combo(challenger),b=combo(current),l=combo(lead);if(a.type==='invalid'||a.count!==l.count)return false;
+  if(a.suit!==l.suit&&a.suit!=='trump')return false;
+  if(b.suit!==a.suit){if(a.suit==='trump'&&b.suit!=='trump')return true;return false}
+  if(l.type==='single')return a.top>b.top;
+  if(l.type==='pair')return a.type==='pair'&&b.type==='pair'&&a.top>b.top;
+  if(l.type==='tractor')return a.type==='tractor'&&b.type==='tractor'&&a.top>b.top;
+  return a.type===b.type&&a.pairs===b.pairs&&a.top>b.top;
+}
+function throwBlocked(cards,player){
+  let c=combo(cards);if(c.type!=='throw')return false;
+  let opponents=hands.filter((_,i)=>i!==player&&team(i)!==team(player)),minimum=Math.min(...cards.map(power));
+  if(opponents.some(h=>h.some(x=>es(x)===c.suit&&power(x)>minimum)))return true;
+  let ownPairs={};cards.forEach(x=>(ownPairs[faceKey(x)]||=[]).push(x));let pairTops=Object.values(ownPairs).filter(g=>g.length>=2).map(g=>power(g[0]));
+  if(pairTops.length){let lowestPair=Math.min(...pairTops);for(let h of opponents){let groups={};h.filter(x=>es(x)===c.suit).forEach(x=>(groups[faceKey(x)]||=[]).push(x));if(Object.values(groups).some(g=>g.length>=2&&power(g[0])>lowestPair))return true}}
+  return false;
+}
+function winner(){let w=table[0];for(let p of table.slice(1))if(beats(p.cards,w.cards,table[0].cards))w=p;return w.p}
 function deck(){let d=[];for(let k=0;k<2;k++){for(let s of SUITS)for(let r of RANKS)d.push({id:k+s[0]+r,s:s[0],r});d.push({id:k+'sj',s:'joker',r:'SJ'},{id:k+'bj',s:'joker',r:'BJ'})}for(let i=d.length-1;i;i--){let j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]]}return d}
 function setupUI(){
   $('choices').innerHTML=[1,2,3].map(i=>`<button class="choice ${mate===i?'on':''}" data-m="${i}"><span class="avatar">${NAMES[i].replace('机器人','')[0]}</span><span><b>${NAMES[i]}</b><small>${i===1?'两位真人同队':'真人与机器人组队'}</small></span><i>${mate===i?'已选择':'选择'}</i></button>`).join('');
@@ -75,32 +116,44 @@ function setupUI(){
 }
 function start(){
   if(role!=='host'||!online){$('netStatus').textContent='请等待好友加入后再开始';return}
-  let d=deck();hands=[0,1,2,3].map(i=>d.slice(i*27,(i+1)*27));counts=hands.map(h=>h.length);table=[];turn=0;scores=[0,0];playing=true;clearing=false;gameEnded=false;lastText='';
+  let d=deck();hands=[0,1,2,3].map(i=>d.slice(i*27,(i+1)*27));counts=hands.map(h=>h.length);table=[];turn=0;scores=[0,0];playing=true;clearing=false;gameEnded=false;lastText='';selected.clear();
   $('setup').hidden=true;$('table').hidden=false;$('finish').hidden=true;$('handarea').hidden=false;$('message').textContent='轮到房主先出牌';render();sync()
 }
-function cardHTML(c,kind,ok,id){let f=face(c);return`<${kind==='hand'?'button':'div'} class="card ${kind==='hand'?'handcard':'tablecard'} ${f[2]?'red':''} ${ok?'can':''}" ${id?`data-c="${id}"`:''} ${kind==='hand'&&!ok?'disabled':''}><b>${f[0]}</b><span>${f[1]}</span>${tr(c)?'<i class="trumpdot"></i>':''}${pts(c)?`<em>${pts(c)}分</em>`:''}</${kind==='hand'?'button':'div'}>`}
+function cardHTML(c,kind,ok,id){let f=face(c),picked=selected.has(c.id);return`<${kind==='hand'?'button':'div'} class="card ${kind==='hand'?'handcard':'tablecard'} ${f[2]?'red':''} ${ok?'can':''} ${picked?'picked':''}" ${id?`data-c="${id}"`:''} ${kind==='hand'&&!ok?'disabled':''}><b>${f[0]}</b><span>${f[1]}</span>${tr(c)?'<i class="trumpdot"></i>':''}${pts(c)?`<em>${pts(c)}分</em>`:''}</${kind==='hand'?'button':'div'}>`}
 function render(){
   const me=role==='guest'?1:0,myHand=hands[me]||[];
   $('teamA').textContent='A 队 · '+NAMES[0]+'和'+NAMES[mate];$('scoreA').textContent=scores[0];$('scoreB').textContent=scores[1];
   for(let i=1;i<4;i++)$('n'+i).textContent=(counts[i]??0)+' 张';
-  $('handcount').textContent='你的手牌 · '+myHand.length+' 张';$('turnhint').textContent=turn===me&&!clearing?'请选择一张发亮的牌':'等待其他玩家';
-  $('played').innerHTML=table.map(x=>`<div class="playwrap"><small>${NAMES[x.p]}</small>${cardHTML(x.c,'table',false,'')}</div>`).join('');$('last').textContent=lastText;
-  let ids=new Set(turn===me&&!clearing?legal(myHand).map(c=>c.id):[]);
+  $('handcount').textContent='你的手牌 · '+myHand.length+' 张';$('turnhint').textContent=turn===me&&!clearing?(selected.size?'已选择 '+selected.size+' 张':'请选择手牌'):'等待其他玩家';
+  $('confirmPlay').hidden=turn!==me||clearing;
+  $('played').innerHTML=table.map(x=>`<div class="playwrap"><small>${NAMES[x.p]} · ${typeName(combo(x.cards).type)}</small><div class="multicards">${x.cards.map(c=>cardHTML(c,'table',false,'')).join('')}</div></div>`).join('');$('last').textContent=lastText;
+  let ids=new Set(turn===me&&!clearing?myHand.map(c=>c.id):[]);
   $('hand').innerHTML=myHand.slice().sort((a,b)=>es(a).localeCompare(es(b))||power(b)-power(a)).map(c=>cardHTML(c,'hand',ids.has(c.id),c.id)).join('');
   document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>requestPlay(b.dataset.c));
 }
-function requestPlay(id){const me=role==='guest'?1:0;if(role==='guest'){if(turn===1&&conn?.open)conn.send({t:'play',id});return}let c=hands[me].find(x=>x.id===id);if(c&&legal(hands[me]).some(x=>x.id===id))play(me,c)}
-function play(p,c){if(!c||clearing||turn!==p||!legal(hands[p]).some(x=>x.id===c.id))return;hands[p]=hands[p].filter(x=>x.id!==c.id);counts[p]=hands[p].length;table.push({p,c});turn=(p+1)%4;$('message').textContent=NAMES[p]+' 已出牌';render();sync();if(table.length===4)clearTrick();else if(shouldAI())setTimeout(ai,480)}
+function requestPlay(id){if(selected.has(id))selected.delete(id);else selected.add(id);render()}
+function submitPlay(){
+  const me=role==='guest'?1:0,chosen=hands[me].filter(c=>selected.has(c.id));if(!chosen.length)return;
+  let error=followError(hands[me],chosen);if(error){$('message').textContent=error;return}
+  if(role==='guest'){if(turn===1&&conn?.open)conn.send({t:'play',ids:[...selected]});return}play(me,chosen)
+}
+function play(p,cards){if(!cards.length||clearing||turn!==p)return;let error=followError(hands[p],cards);if(error){if(p<2)$('message').textContent=error;return}if(!table.length&&throwBlocked(cards,p)){if(p<2)$('message').textContent='甩牌失败：对方有更大的同类牌，请重新选择';return}let ids=new Set(cards.map(c=>c.id));hands[p]=hands[p].filter(x=>!ids.has(x.id));counts[p]=hands[p].length;table.push({p,cards});selected.clear();turn=(p+1)%4;$('message').textContent=NAMES[p]+' 出了 '+cards.length+' 张（'+typeName(combo(cards).type)+'）';render();sync();if(table.length===4)clearTrick();else if(shouldAI())setTimeout(ai,480)}
 function shouldAI(){return playing&&!clearing&&(turn===2||turn===3)}
-function ai(){if(!shouldAI())return;let a=legal(hands[turn]).slice().sort((x,y)=>power(x)-power(y));play(turn,a[0])}
-function clearTrick(){clearing=true;sync();setTimeout(()=>{let w=winner(),p=table.reduce((n,x)=>n+pts(x.c),0);scores[team(w)]+=p;lastText=NAMES[w]+' 收下这一墩，获得 '+p+' 分';table=[];turn=w;clearing=false;if(hands.every(h=>h.length===0)){playing=false;gameEnded=true;render();finish();sync()}else{$('message').textContent=NAMES[w]+' 赢得上一墩';render();sync();if(shouldAI())setTimeout(ai,480)}},800)}
+function aiChoice(hand){
+  let sorted=hand.slice().sort((a,b)=>power(a)-power(b));if(!table.length)return[sorted[0]];
+  let lead=table[0].cards,lc=combo(lead),same=sorted.filter(c=>es(c)===lc.suit),pool=same.length>=lead.length?same:same.concat(sorted.filter(c=>es(c)!==lc.suit)),out=[];
+  if(lc.type==='pair'||lc.type==='tractor'){let groups={};same.forEach(c=>(groups[faceKey(c)]||=[]).push(c));let pairs=Object.values(groups).filter(g=>g.length>=2).sort((a,b)=>power(a[0])-power(b[0]));for(let g of pairs){if(out.length+2<=lead.length)out.push(g[0],g[1])}}
+  for(let c of pool)if(out.length<lead.length&&!out.some(x=>x.id===c.id))out.push(c);return out
+}
+function ai(){if(!shouldAI())return;play(turn,aiChoice(hands[turn]))}
+function clearTrick(){clearing=true;sync();setTimeout(()=>{let w=winner(),p=table.reduce((n,x)=>n+x.cards.reduce((s,c)=>s+pts(c),0),0);scores[team(w)]+=p;lastText=NAMES[w]+' 收下这一墩，获得 '+p+' 分';table=[];turn=w;clearing=false;if(hands.every(h=>h.length===0)){playing=false;gameEnded=true;render();finish();sync()}else{$('message').textContent=NAMES[w]+' 赢得上一墩';render();sync();if(shouldAI())setTimeout(ai,480)}},800)}
 function finish(){const me=role==='guest'?1:0,winTeam=scores[0]>=scores[1]?0:1;$('handarea').hidden=true;$('finish').hidden=false;$('result').textContent=team(me)===winTeam?'你们赢了！':'再来一局？';$('finalscore').textContent='A 队 '+scores[0]+' 分 · B 队 '+scores[1]+' 分'}
 function snapshot(){return{t:'state',playing,gameEnded,trump,mate,hand:hands[1],counts:hands.map(h=>h.length),table,turn,scores,clearing,lastText,message:$('message').textContent}}
 function sync(){if(role==='host'&&conn?.open)conn.send(snapshot())}
 function receiveState(s){trump=s.trump;mate=s.mate;hands=[[],s.hand,[],[]];counts=s.counts;table=s.table;turn=s.turn;scores=s.scores;clearing=s.clearing;lastText=s.lastText;playing=s.playing;gameEnded=s.gameEnded;$('chip').textContent='级牌 2 · 主牌 '+SUITS.find(x=>x[0]===trump)[1];$('setup').hidden=true;$('table').hidden=false;$('message').textContent=s.message;$('finish').hidden=true;$('handarea').hidden=false;render();if(gameEnded)finish()}
 function bindConnection(c){
   conn=c;conn.on('open',()=>{online=true;if(role==='host'){$('netStatus').textContent='好友已加入，可以选择队伍并开始';$('config').hidden=false;sync()}else $('netStatus').textContent='已加入，等待房主开始'});
-  conn.on('data',d=>{if(role==='guest'&&d.t==='state')receiveState(d);if(role==='host'&&d.t==='play'&&turn===1){let c=hands[1].find(x=>x.id===d.id);if(c&&legal(hands[1]).some(x=>x.id===d.id))play(1,c)}});
+  conn.on('data',d=>{if(role==='guest'&&d.t==='state'){selected.clear();receiveState(d)}if(role==='host'&&d.t==='play'&&turn===1){let ids=new Set(d.ids||[]),cards=hands[1].filter(x=>ids.has(x.id));play(1,cards)}});
   conn.on('close',()=>{online=false;if(playing)$('message').textContent='好友连接已断开'})
 }
 function createRoom(){
@@ -113,7 +166,7 @@ function joinRoom(code){
   if(!window.Peer){$('netStatus').textContent='联机组件加载失败，请刷新重试';return}role='guest';$('lobbyTitle').textContent='正在加入好友房间';$('createRoom').hidden=true;$('netStatus').textContent='正在连接房主，请保持页面打开…';
   peer=new Peer();peer.on('open',()=>bindConnection(peer.connect('double510k-'+code.toLowerCase(),{reliable:true})));peer.on('error',()=>{$('netStatus').textContent='未找到房间，请让房主保持页面打开'})
 }
-$('createRoom').onclick=createRoom;$('start').onclick=start;$('again').onclick=()=>location.href=location.origin+location.pathname;setupUI();let room=new URLSearchParams(location.search).get('room');if(room)joinRoom(room);
+$('createRoom').onclick=createRoom;$('start').onclick=start;$('confirmPlay').onclick=submitPlay;$('again').onclick=()=>location.href=location.origin+location.pathname;setupUI();let room=new URLSearchParams(location.search).get('room');if(room)joinRoom(room);
 </script>
 </body>
 </html>
